@@ -70,14 +70,14 @@
             <div class="nav-arrow-btn">&#10095;</div>
         </div>
 
-        <!-- TOP-LEFT CHAPTER HUB / CHAPTER LIST BUTTON -->
+        <!-- TOP-LEFT CHAPTER HUB LINK (Updated with your exact URL) -->
         <div class="absolute top-3 left-3 z-40">
-            <a href="https://akashmathsonline.github.io/" class="bg-[#1C2541]/90 hover:bg-[#1C2541] text-white px-3.5 py-2 rounded-xl shadow-lg backdrop-blur-md text-xs font-medium tracking-wide flex items-center gap-2 border border-white/20 transition transform hover:scale-105" title="Go to Chapter List / Hub">
+            <a href="https://www.akashmaths.online/p/master-smart-board-slides-hub.html" class="bg-[#1C2541]/90 hover:bg-[#1C2541] text-white px-3.5 py-2 rounded-xl shadow-lg backdrop-blur-md text-xs font-medium tracking-wide flex items-center gap-2 border border-white/20 transition transform hover:scale-105" title="Go to Chapter Hub">
                 <span>←</span> <span>Chapter Hub</span>
             </a>
         </div>
 
-        <!-- TOP-LEFT DISCREET SLIDE COUNTER (Shifted slightly right of Chapter Hub) -->
+        <!-- TOP-LEFT DISCREET SLIDE COUNTER -->
         <div id="slideCounterDisplay" class="absolute top-3 left-36 bg-black/60 backdrop-blur-sm text-white px-3 py-2 rounded-xl text-xs font-mono tracking-wider z-40 pointer-events-none opacity-80 border border-white/10">
             01 / --
         </div>
@@ -144,7 +144,7 @@
 
         pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
             pdfDoc = pdfDoc_;
-            updateCounters(01);
+            updateCounters(1);
             renderPage(pageNum);
         }).catch(err => {
             console.error(err);
