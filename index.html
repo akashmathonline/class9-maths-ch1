@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akash Maths Online - Smart Board Classroom Viewer</title>
+    <title>Akash Maths Online - Smart Board Full 16:9 Studio</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PDF.js Library -->
@@ -13,15 +13,12 @@
     </script>
     <style>
         body { background-color: #0B132B; overflow: hidden; user-select: none; }
-        .slide-container {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
-        }
-        /* Side Hover Zones for Slide Navigation */
+        /* Side Hover Zones for 16:9 Fullscreen Navigation */
         .hover-zone-left, .hover-zone-right {
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 90px;
+            width: 80px;
             z-index: 30;
             display: flex;
             align-items: center;
@@ -30,9 +27,9 @@
             transition: opacity 0.2s ease-in-out;
             cursor: pointer;
         }
-        .hover-zone-left { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.25), transparent); }
-        .hover-zone-right { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.25), transparent); }
-        .slide-container:hover .hover-zone-left, .slide-container:hover .hover-zone-right {
+        .hover-zone-left { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.3), transparent); }
+        .hover-zone-right { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.3), transparent); }
+        main:hover .hover-zone-left, main:hover .hover-zone-right {
             opacity: 1;
         }
         .nav-arrow-btn {
@@ -44,7 +41,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             font-size: 26px;
             font-weight: bold;
             transition: transform 0.15s;
@@ -52,7 +49,7 @@
         .nav-arrow-btn:hover { transform: scale(1.1); background: #ffffff; }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between p-2.5 select-none">
+<body class="h-screen w-screen flex flex-col justify-between p-2 select-none">
 
     <!-- TOP HEADER BAR -->
     <header class="flex justify-between items-center px-4 py-2 bg-[#1C2541] text-white rounded-xl shadow-lg z-40 border border-white/10">
@@ -60,7 +57,7 @@
             <a href="https://akashmathsonline.github.io/" class="bg-[#3A506B] hover:bg-[#475C7D] px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1.5 shadow">
                 ← Chapter Hub
             </a>
-            <h1 class="text-base font-semibold tracking-wide text-gray-100">Class 9 Mathematics - Smart Board Studio</h1>
+            <h1 class="text-base font-semibold tracking-wide text-gray-100">Class 9 Mathematics - 16:9 Presentation Studio</h1>
         </div>
         <div class="flex items-center space-x-3 text-sm">
             <button onclick="zoomOut()" class="bg-[#3A506B] hover:bg-[#475C7D] px-2.5 py-1 rounded-md text-white font-bold" title="Zoom Out">−</button>
@@ -69,43 +66,45 @@
         </div>
     </header>
 
-    <!-- MAIN PRESENTATION AREA -->
-    <main class="flex-1 flex items-center justify-center relative my-1.5 overflow-hidden">
+    <!-- MAIN FULL 16:9 PRESENTATION AREA -->
+    <main class="flex-1 flex items-center justify-center relative my-1 overflow-hidden bg-black rounded-xl shadow-2xl">
         
-        <!-- Central White Box Container (Optimized for Large Classroom View) -->
-        <div id="slideWrapper" class="slide-container relative bg-white w-[95%] h-[95%] rounded-2xl overflow-hidden flex items-center justify-center">
-            
-            <!-- PDF Canvas Viewer -->
-            <canvas id="pdfCanvas" class="max-w-full max-h-full object-contain"></canvas>
+        <!-- PDF Canvas Viewer (Full Board Fit) -->
+        <canvas id="pdfCanvas" class="max-w-full max-h-full object-contain"></canvas>
 
-            <!-- Annotation Drawing Canvas Overlay -->
-            <canvas id="drawCanvas" class="absolute inset-0 z-20 cursor-crosshair pointer-events-none"></canvas>
+        <!-- Annotation & Shape Drawing Canvas Overlay -->
+        <canvas id="drawCanvas" class="absolute inset-0 z-20 cursor-crosshair pointer-events-none"></canvas>
 
-            <!-- Left Hover Zone (Previous Slide) -->
-            <div id="hoverPrev" class="hover-zone-left" title="Previous Slide">
-                <div class="nav-arrow-btn">&#10094;</div>
-            </div>
-
-            <!-- Right Hover Zone (Next Slide) -->
-            <div id="hoverNext" class="hover-zone-right" title="Next Slide">
-                <div class="nav-arrow-btn">&#10095;</div>
-            </div>
-
+        <!-- Left Hover Zone (Previous Slide) -->
+        <div id="hoverPrev" class="hover-zone-left" title="Previous Slide">
+            <div class="nav-arrow-btn">&#10094;</div>
         </div>
 
-        <!-- RIGHT FLOATING SMART BOARD TOOLBAR (Restored All Tools & Colors) -->
+        <!-- Right Hover Zone (Next Slide) -->
+        <div id="hoverNext" class="hover-zone-right" title="Next Slide">
+            <div class="nav-arrow-btn">&#10095;</div>
+        </div>
+
+        <!-- RIGHT FLOATING SMART BOARD TOOLBAR (Pens, Colors, Shapes, Eraser) -->
         <aside class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#1C2541]/95 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col items-center space-y-2 z-40 border border-white/15">
-            <button id="toolPen" onclick="setTool('pen')" class="p-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow" title="Pen (Blue)">✏️</button>
-            <button id="toolHighlighter" onclick="setTool('highlighter')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition" title="Highlighter">🖍️</button>
-            <button id="toolEraser" onclick="setTool('eraser')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition" title="Eraser">🧹</button>
+            <button id="toolPen" onclick="setTool('pen')" class="p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow text-sm" title="Pen">✏️</button>
+            <button id="toolHighlighter" onclick="setTool('highlighter')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Highlighter">🖍️</button>
+            <button id="toolEraser" onclick="setTool('eraser')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Eraser">🧹</button>
             
             <div class="w-6 h-[1px] bg-white/20 my-0.5"></div>
             
-            <!-- Color Palette for Teaching -->
-            <button onclick="setPenColor('#2563EB')" class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white shadow" title="Blue Pen"></button>
-            <button onclick="setPenColor('#DC2626')" class="w-6 h-6 rounded-full bg-red-600 border-2 border-white shadow" title="Red Pen"></button>
-            <button onclick="setPenColor('#16A34A')" class="w-6 h-6 rounded-full bg-green-600 border-2 border-white shadow" title="Green Pen"></button>
-            <button onclick="setPenColor('#000000')" class="w-6 h-6 rounded-full bg-black border-2 border-white shadow" title="Black Pen"></button>
+            <!-- Shape Tools -->
+            <button id="toolLine" onclick="setTool('line')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Straight Line">📏</button>
+            <button id="toolRect" onclick="setTool('rect')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Rectangle Shape">◻️</button>
+            <button id="toolCircle" onclick="setTool('circle')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Circle Shape">⭕</button>
+
+            <div class="w-6 h-[1px] bg-white/20 my-0.5"></div>
+            
+            <!-- Color Palette -->
+            <button onclick="setPenColor('#2563EB')" class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow" title="Blue"></button>
+            <button onclick="setPenColor('#DC2626')" class="w-5 h-5 rounded-full bg-red-600 border-2 border-white shadow" title="Red"></button>
+            <button onclick="setPenColor('#16A34A')" class="w-5 h-5 rounded-full bg-green-600 border-2 border-white shadow" title="Green"></button>
+            <button onclick="setPenColor('#000000')" class="w-5 h-5 rounded-full bg-black border-2 border-white shadow" title="Black"></button>
 
             <div class="w-6 h-[1px] bg-white/20 my-0.5"></div>
             <button onclick="clearCanvas()" class="p-2 rounded-xl bg-red-600/80 text-white hover:bg-red-500 transition text-xs" title="Clear Screen">🗑️</button>
@@ -130,7 +129,7 @@
             pageNum = 1,
             pageRendering = false,
             pageNumPending = null,
-            scale = 1.35, // Optimized for Big Smart Board Clarity
+            scale = 1.4,
             currentTool = 'pen',
             penColor = '#2563EB';
 
@@ -138,6 +137,8 @@
         const ctx = canvas.getContext('2d');
         const drawCanvas = document.getElementById('drawCanvas');
         const drawCtx = drawCanvas.getContext('2d');
+
+        let startX = 0, startY = 0, snapshot = null;
 
         pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
             pdfDoc = pdfDoc_;
@@ -191,17 +192,8 @@
             queueRenderPage(pageNum);
         }
 
-        function zoomIn() {
-            scale += 0.15;
-            renderPage(pageNum);
-        }
-
-        function zoomOut() {
-            if (scale > 0.8) {
-                scale -= 0.15;
-                renderPage(pageNum);
-            }
-        }
+        function zoomIn() { scale += 0.15; renderPage(pageNum); }
+        function zoomOut() { if (scale > 0.8) { scale -= 0.15; renderPage(pageNum); } }
 
         document.getElementById('hoverPrev').addEventListener('click', onPrevPage);
         document.getElementById('hoverNext').addEventListener('click', onNextPage);
@@ -216,32 +208,63 @@
 
         drawCanvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
+            startX = e.offsetX;
+            startY = e.offsetY;
             [lastX, lastY] = [e.offsetX, e.offsetY];
+            if (['line', 'rect', 'circle'].includes(currentTool)) {
+                snapshot = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
+            }
         });
 
         drawCanvas.addEventListener('mousemove', (e) => {
             if (!isDrawing) return;
-            drawCtx.beginPath();
-            drawCtx.moveTo(lastX, lastY);
-            drawCtx.lineTo(e.offsetX, e.offsetY);
-            
-            if (currentTool === 'pen') {
+
+            if (['line', 'rect', 'circle'].includes(currentTool)) {
+                drawCtx.putImageData(snapshot, 0, 0);
+                drawCtx.beginPath();
                 drawCtx.strokeStyle = penColor;
-                drawCtx.lineWidth = 3.5;
+                drawCtx.lineWidth = 3;
                 drawCtx.globalAlpha = 1.0;
-            } else if (currentTool === 'highlighter') {
-                drawCtx.strokeStyle = '#FACC15';
-                drawCtx.lineWidth = 20;
-                drawCtx.globalAlpha = 0.35;
-            } else if (currentTool === 'eraser') {
-                drawCtx.strokeStyle = '#FFFFFF';
-                drawCtx.lineWidth = 30;
-                drawCtx.globalAlpha = 1.0;
+
+                if (currentTool === 'line') {
+                    drawCtx.moveTo(startX, startY);
+                    drawCtx.lineTo(e.offsetX, e.offsetY);
+                    drawCtx.stroke();
+                } else if (currentTool === 'rect') {
+                    let width = e.offsetX - startX;
+                    let height = e.offsetY - startY;
+                    drawCtx.strokeRect(startX, startY, width, height);
+                } else if (currentTool === 'circle') {
+                    let radiusX = Math.abs(e.offsetX - startX) / 2;
+                    let radiusY = Math.abs(e.offsetY - startY) / 2;
+                    let centerX = startX + (e.offsetX - startX) / 2;
+                    let centerY = startY + (e.offsetY - startY) / 2;
+                    drawCtx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+                    drawCtx.stroke();
+                }
+            } else {
+                drawCtx.beginPath();
+                drawCtx.moveTo(lastX, lastY);
+                drawCtx.lineTo(e.offsetX, e.offsetY);
+                
+                if (currentTool === 'pen') {
+                    drawCtx.strokeStyle = penColor;
+                    drawCtx.lineWidth = 3.5;
+                    drawCtx.globalAlpha = 1.0;
+                } else if (currentTool === 'highlighter') {
+                    drawCtx.strokeStyle = '#FACC15';
+                    drawCtx.lineWidth = 20;
+                    drawCtx.globalAlpha = 0.35;
+                } else if (currentTool === 'eraser') {
+                    drawCtx.strokeStyle = '#000000';
+                    drawCtx.lineWidth = 30;
+                    drawCtx.globalAlpha = 1.0;
+                }
+                
+                drawCtx.lineCap = 'round';
+                drawCtx.stroke();
+                [lastX, lastY] = [e.offsetX, e.offsetY];
             }
-            
-            drawCtx.lineCap = 'round';
-            drawCtx.stroke();
-            [lastX, lastY] = [e.offsetX, e.offsetY];
         });
 
         window.addEventListener('mouseup', () => isDrawing = false);
@@ -250,14 +273,15 @@
             currentTool = tool;
             drawCanvas.style.pointerEvents = 'auto';
             document.querySelectorAll('aside button').forEach(b => b.classList.remove('ring-4', 'ring-white/60'));
-            if(tool === 'pen') document.getElementById('toolPen').classList.add('ring-4', 'ring-white/60');
-            if(tool === 'highlighter') document.getElementById('toolHighlighter').classList.add('ring-4', 'ring-white/60');
-            if(tool === 'eraser') document.getElementById('toolEraser').classList.add('ring-4', 'ring-white/60');
+            const btnMap = { 'pen': 'toolPen', 'highlighter': 'toolHighlighter', 'eraser': 'toolEraser', 'line': 'toolLine', 'rect': 'toolRect', 'circle': 'toolCircle' };
+            if(btnMap[tool]) document.getElementById(btnMap[tool]).classList.add('ring-4', 'ring-white/60');
         }
 
         function setPenColor(color) {
             penColor = color;
-            setTool('pen');
+            if(['line', 'rect', 'circle', 'highlighter', 'eraser'].indexOf(currentTool) === -1) {
+                setTool('pen');
+            }
         }
 
         function clearCanvas() {
