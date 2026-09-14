@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class 9 Mathematics - Chapter 1 | Akash Maths Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- PDF.js Library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
+
+  <style>
+    :root {
+      --luna-bg: #FFF4E9;
+      --slide-scale: 1;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #121019;
+      user-select: none;
+    }
+
+    /* 16:9 VIEWPORT CENTERED & ZOOMABLE */
+    .presentation-viewport {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(var(--slide-scale));
+      width: 177.78vh;
+      height: 100vh;
+      max-height: 56.25vw;
+      max-width: 100vw;
+      background-color: var(--luna-bg);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #pdfCanvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* TOP-LEFT CHAPTER HUB BUTTON */
+    .back-to-hub-btn {
+      position: fixed;
+      top: 15px;
+      left: 18px;
+      z-index: 70;
+      background: #221C33;
+      color: #FFFFFF !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      padding: 6px 15px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+    .back-to-hub-btn:hover {
+      background: #F4714B;
+      border-color: #F4714B;
+      transform: translateY(-2px);
+    }
+
+    /* VERTICAL RIGHT-SIDE DOCK */
+    .stylus-toolbar-vertical {
+      position: fixed;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      z-index: 65;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      background: rgba(34, 28, 51, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 8px 6px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+    .tool-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .tool-btn:hover {
+      background: rgba(244, 113, 75, 0.85);
+      border-color: transparent;
+    }
+    .tool-btn.active {
+      background: #F4714B;
+      border-color: #F4714B;
+      box-shadow: 0 0 10px rgba(244, 113, 75, 0.6);
+    }
+    .color-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+      transition: transform 0.15s ease;
+    }
+    .color-swatch:hover, .color-swatch.active {
+      transform: scale(1.3);
+    }
+
+    /* BOTTOM-CENTER HUD CONTROLS */
+    .hud-controls {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(34, 28, 51, 0.92);
+      backdrop-filter: blur(10px);
+      padding: 5px 16px;
+      border-radius: 9999px;
+      color: white;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .hud-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .hud-btn:hover {
+      background: rgba(244, 113, 75, 0.85);
+    }
+
+    /* DRAWING CANVAS */
+    #drawCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 40;
+      cursor: crosshair;
+      pointer-events: none;
+      touch-action: none;
+    }
+    #drawCanvas.active-interactive { pointer-events: auto; }
+
+    /* WEBSITE WATERMARK */
+    .brand-watermark {
+      position: fixed;
+      bottom: 20px;
+      right: 25px;
+      z-index: 55;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Baloo 2', cursive, sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    /* LOADING SPINNER */
+    #loadingOverlay {
+      position: absolute;
+      inset: 0;
+      background: #FFF4E9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      font-family: 'Baloo 2', cursive, sans-serif;
+      color: #5B3FD1;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP-LEFT CHAPTER HUB LINK -->
+  <a href="https://www.akashmaths.online/p/master-smart-board-slides-hub.html" class="back-to-hub-btn" title="Return to Chapter Hub">
+    <span>⬅</span>
+    <span>Chapter Hub</span>
+  </a>
+
+  <!-- WEBSITE WATERMARK -->
+  <div class="brand-watermark">www.akashmaths.online</div>
+
+  <!-- VERTICAL RIGHT-SIDE DOCK -->
+  <div class="stylus-toolbar-vertical" id="stylusToolbar">
+    <button class="tool-btn font-bold text-base" id="btnZoomIn" title="Zoom In">🔍+</button>
+    <button class="tool-btn font-bold text-base" id="btnZoomOut" title="Zoom Out">🔍−</button>
+
+    <div class="w-4 h-[1px] bg-white/30 my-0.5"></div>
+
+    <!-- Drawing & Shapes -->
+    <button class="tool-btn" id="btnPen" title="Pen (P)">✏️</button>
+    <button class="tool-btn" id="btnHighlighter" title="Highlighter (H)">🖍️</button>
+    <button class="tool-btn" id="btnLine" title="Straight Line">📏</button>
+    <button class="tool-btn" id="btnRect" title="Rectangle">⬜</button>
+    <button class="tool-btn" id="btnCircle" title="Circle">⭕</button>
+    <button class="tool-btn" id="btnTriangle" title="Triangle">🔺</button>
+    <button class="tool-btn" id="btnEraser" title="Eraser (E)">🧹</button>
+
+    <div class="flex flex-col items-center gap-1.5 my-1">
+      <div class="color-swatch bg-[#E85C5C] active" data-color="#E85C5C" title="Red"></div>
+      <div class="color-swatch bg-[#2F80ED]" data-color="#2F80ED" title="Blue"></div>
+      <div class="color-swatch bg-[#27AE60]" data-color="#27AE60" title="Green"></div>
+      <div class="color-swatch bg-[#F4714B]" data-color="#F4714B" title="Coral"></div>
+      <div class="color-swatch bg-[#221C33]" data-color="#221C33" title="Black"></div>
+    </div>
+
+    <button class="tool-btn" id="btnClearDraw" title="Clear Slide">🗑️</button>
+
+    <div class="w-4 h-[1px] bg-white/30 my-0.5"></div>
+
+    <!-- Google Drive Download Button -->
+    <a href="https://drive.google.com/file/d/1tX9_-ctCti7E1_CoTVlDdCEkM_ck3sZA/view?usp=sharing" target="_blank" class="tool-btn" title="Download Presentation PDF">📥</a>
+  </div>
+
+  <!-- 16:9 VIEWPORT -->
+  <div class="presentation-viewport" id="viewport">
+    <div id="loadingOverlay">
+      <div class="animate-spin text-4xl mb-2">⏳</div>
+      Loading Crystal-Clear Presentation...
+    </div>
+    <canvas id="pdfCanvas"></canvas>
+    <canvas id="drawCanvas"></canvas>
+  </div>
+
+  <!-- BOTTOM-CENTER HUD NAVIGATION -->
+  <div class="hud-controls">
+    <button class="hud-btn" id="btnPrevHud" title="Previous Slide">◀</button>
+    <span class="text-xs font-mono font-bold px-2" id="hudCounter">01 / --</span>
+    <button class="hud-btn" id="btnNextHud" title="Next Slide">▶</button>
+    <div class="w-[1px] h-4 bg-white/30 mx-1"></div>
+    <button class="hud-btn" id="btnFullscreen" title="Fullscreen">⛶</button>
+  </div>
+
+  <script>
+    // GitHub पर रखी हुई PDF का डायरेक्ट Raw लिंक
+    const pdfUrl = 'https://raw.githubusercontent.com/akashmathsonline/class9-maths-ch1/main/1.%20Orienting%20Yourself_%20The%20Use%20of%20Coordinates.pdf';
+
+    let pdfDoc = null;
+    let currentSlide = 1;
+    let totalSlides = 0;
+    let pageRendering = false;
+    let pageNumPending = null;
+
+    const pdfCanvas = document.getElementById('pdfCanvas');
+    const pdfCtx = pdfCanvas.getContext('2d');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      totalSlides = pdfDoc.numPages;
+      loadingOverlay.style.display = 'none';
+      renderPage(currentSlide);
+    }).catch(function(error) {
+      console.error('PDF Load Error:', error);
+      loadingOverlay.innerHTML = '<span class="text-red-600 font-bold">PDF लोड करने में विफल।</span><br><span class="text-xs text-gray-600 mt-1">कृपया सुनिश्चित करें कि पीडीएफ फाइल का नाम और रिपॉजिटरी सही है।</span>';
+    });
+
+    function renderPage(num) {
+      pageRendering = true;
+      pdfDoc.getPage(num).then(function(page) {
+        const viewport = page.getViewport({ scale: 3.0 }); // Ultra-crisp vector rendering
+        pdfCanvas.height = viewport.height;
+        pdfCanvas.width = viewport.width;
+
+        const renderContext = {
+          canvasContext: pdfCtx,
+          viewport: viewport
+        };
+
+        const renderTask = page.render(renderContext);
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          if (pageNumPending !== null) {
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      currentSlide = num;
+      document.getElementById('hudCounter').innerText = `${String(currentSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+      restoreSlideCanvas(currentSlide);
+    }
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        saveSlideCanvas(currentSlide);
+        queueRenderPage(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        saveSlideCanvas(currentSlide);
+        queueRenderPage(currentSlide - 1);
+      }
+    }
+
+    // Smart Navigation: Click left/right half of viewport
+    const viewport = document.getElementById('viewport');
+    viewport.addEventListener('click', (e) => {
+      if (currentTool !== 'none') return;
+      if (e.target.closest('#stylusToolbar') || e.target.closest('.hud-controls')) return;
+
+      const rect = viewport.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      if (clickX < rect.width / 2) {
+        prevSlide();
+      } else {
+        nextSlide();
+      }
+    });
+
+    document.getElementById('btnPrevHud').addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
+    document.getElementById('btnNextHud').addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
+
+    // Fullscreen Toggle
+    document.getElementById('btnFullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(e => console.warn(e));
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+
+    // Zoom Engine (75% to 200%)
+    let currentZoom = 1.0;
+    function updateZoom(step) {
+      currentZoom = Math.min(Math.max(0.75, currentZoom + step), 2.00);
+      document.documentElement.style.setProperty('--slide-scale', currentZoom);
+    }
+    document.getElementById('btnZoomIn').addEventListener('click', () => updateZoom(0.10));
+    document.getElementById('btnZoomOut').addEventListener('click', () => updateZoom(-0.10));
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') prevSlide();
+      else if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+      else if (e.key === '+' || e.key === '=') updateZoom(0.10);
+      else if (e.key === '-' || e.key === '_') updateZoom(-0.10);
+    });
+
+    // Drawing & Shape Engine
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    let currentTool = 'none';
+    let currentColor = '#E85C5C';
+    let isDrawing = false;
+    let startX = 0, startY = 0;
+    let snapshot = null;
+    const slideDrawings = {};
+
+    function resizeCanvas() {
+      canvas.width = viewport.clientWidth;
+      canvas.height = viewport.clientHeight;
+      restoreSlideCanvas(currentSlide);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', resizeCanvas);
+
+    function setActiveTool(tool) {
+      currentTool = tool;
+      const tools = ['Pen', 'Highlighter', 'Line', 'Rect', 'Circle', 'Triangle', 'Eraser'];
+      tools.forEach(t => {
+        const btn = document.getElementById('btn' + t);
+        if (btn) btn.classList.toggle('active', t.toLowerCase() === tool || (tool === 'pen' && t === 'Pen') || (tool === 'highlighter' && t === 'Highlighter'));
+      });
+
+      if (currentTool === 'none') {
+        canvas.classList.remove('active-interactive');
+      } else {
+        canvas.classList.add('active-interactive');
+      }
+    }
+
+    document.getElementById('btnPen').addEventListener('click', () => setActiveTool(currentTool === 'pen' ? 'none' : 'pen'));
+    document.getElementById('btnHighlighter').addEventListener('click', () => setActiveTool(currentTool === 'highlighter' ? 'none' : 'highlighter'));
+    document.getElementById('btnLine').addEventListener('click', () => setActiveTool(currentTool === 'line' ? 'none' : 'line'));
+    document.getElementById('btnRect').addEventListener('click', () => setActiveTool(currentTool === 'rect' ? 'none' : 'rect'));
+    document.getElementById('btnCircle').addEventListener('click', () => setActiveTool(currentTool === 'circle' ? 'none' : 'circle'));
+    document.getElementById('btnTriangle').addEventListener('click', () => setActiveTool(currentTool === 'triangle' ? 'none' : 'triangle'));
+    document.getElementById('btnEraser').addEventListener('click', () => setActiveTool(currentTool === 'eraser' ? 'none' : 'eraser'));
+
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        currentColor = swatch.getAttribute('data-color');
+        if (currentTool === 'none' || currentTool === 'eraser') setActiveTool('pen');
+      });
+    });
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function startDraw(e) {
+      if (currentTool === 'none') return;
+      isDrawing = true;
+      const pos = getCoords(e);
+      startX = pos.x;
+      startY = pos.y;
+      snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      applyToolSettings();
+      if (currentTool === 'pen' || currentTool === 'highlighter' || currentTool === 'eraser') {
+        ctx.lineTo(startX, startY);
+        ctx.stroke();
+      }
+    }
+
+    function draw(e) {
+      if (!isDrawing || currentTool === 'none') return;
+      const pos = getCoords(e);
+
+      if (currentTool === 'pen' || currentTool === 'highlighter' || currentTool === 'eraser') {
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      } else {
+        ctx.putImageData(snapshot, 0, 0);
+        drawShape(pos.x, pos.y);
+      }
+    }
+
+    function drawShape(endX, endY) {
+      ctx.beginPath();
+      applyToolSettings();
+
+      if (currentTool === 'line') {
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+      } else if (currentTool === 'rect') {
+        let width = endX - startX;
+        let height = endY - startY;
+        ctx.strokeRect(startX, startY, width, height);
+      } else if (currentTool === 'circle') {
+        let radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+      } else if (currentTool === 'triangle') {
+        ctx.moveTo(startX, endY);
+        ctx.lineTo((startX + endX) / 2, startY);
+        ctx.lineTo(endX, endY);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    }
+
+    function stopDraw() {
+      if (isDrawing) {
+        isDrawing = false;
+        saveSlideCanvas(currentSlide);
+      }
+    }
+
+    function applyToolSettings() {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      if (currentTool === 'pen' || currentTool === 'line' || currentTool === 'rect' || currentTool === 'circle' || currentTool === 'triangle') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = 3;
+      } else if (currentTool === 'highlighter') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = currentColor + '55';
+        ctx.lineWidth = 16;
+      } else if (currentTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 26;
+      }
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('touchstart', (e) => { if (currentTool !== 'none') { e.preventDefault(); startDraw(e); } }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { if (currentTool !== 'none') { e.preventDefault(); draw(e); } }, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    function saveSlideCanvas(slideNum) { slideDrawings[slideNum] = canvas.toDataURL(); }
+    function restoreSlideCanvas(slideNum) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (slideDrawings[slideNum]) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.drawImage(img, 0, 0);
+        };
+        img.src = slideDrawings[slideNum];
+      }
+    }
+
+    function clearCurrentCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      delete slideDrawings[currentSlide];
+    }
+    document.getElementById('btnClearDraw').addEventListener('click', clearCurrentCanvas);
+  </script>
+</body>
+</html>
