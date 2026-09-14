@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akash Maths Online - Smart Board Full 16:9 Studio</title>
+    <title>Akash Maths Online - Ultimate Smart Board Studio</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PDF.js Library -->
@@ -12,8 +12,8 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
     </script>
     <style>
-        body { background-color: #0B132B; overflow: hidden; user-select: none; }
-        /* Side Hover Zones for 16:9 Fullscreen Navigation */
+        body { background-color: #0B132B; overflow: hidden; margin: 0; padding: 0; user-select: none; }
+        /* Side Hover Zones for Full Screen Navigation */
         .hover-zone-left, .hover-zone-right {
             position: absolute;
             top: 0;
@@ -29,7 +29,7 @@
         }
         .hover-zone-left { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.3), transparent); }
         .hover-zone-right { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.3), transparent); }
-        main:hover .hover-zone-left, main:hover .hover-zone-right {
+        div:hover > .hover-zone-left, div:hover > .hover-zone-right {
             opacity: 1;
         }
         .nav-arrow-btn {
@@ -41,7 +41,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             font-size: 26px;
             font-weight: bold;
             transition: transform 0.15s;
@@ -49,28 +49,13 @@
         .nav-arrow-btn:hover { transform: scale(1.1); background: #ffffff; }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between p-2 select-none">
+<body class="h-screen w-screen flex flex-col overflow-hidden select-none">
 
-    <!-- TOP HEADER BAR -->
-    <header class="flex justify-between items-center px-4 py-2 bg-[#1C2541] text-white rounded-xl shadow-lg z-40 border border-white/10">
-        <div class="flex items-center space-x-3">
-            <a href="https://akashmathsonline.github.io/" class="bg-[#3A506B] hover:bg-[#475C7D] px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1.5 shadow">
-                ← Chapter Hub
-            </a>
-            <h1 class="text-base font-semibold tracking-wide text-gray-100">Class 9 Mathematics - 16:9 Presentation Studio</h1>
-        </div>
-        <div class="flex items-center space-x-3 text-sm">
-            <button onclick="zoomOut()" class="bg-[#3A506B] hover:bg-[#475C7D] px-2.5 py-1 rounded-md text-white font-bold" title="Zoom Out">−</button>
-            <span id="slideCounterDisplay" class="bg-[#3A506B] px-3 py-1 rounded-md text-gray-100 font-mono font-medium">Slide 01 / --</span>
-            <button onclick="zoomIn()" class="bg-[#3A506B] hover:bg-[#475C7D] px-2.5 py-1 rounded-md text-white font-bold" title="Zoom In">+</button>
-        </div>
-    </header>
-
-    <!-- MAIN FULL 16:9 PRESENTATION AREA -->
-    <main class="flex-1 flex items-center justify-center relative my-1 overflow-hidden bg-black rounded-xl shadow-2xl">
+    <!-- ABSOLUTE FULL SCREEN VIEWPORT (No Headers, No Footers) -->
+    <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
         
-        <!-- PDF Canvas Viewer (Full Board Fit) -->
-        <canvas id="pdfCanvas" class="max-w-full max-h-full object-contain"></canvas>
+        <!-- PDF Canvas Viewer (Full Board Cover) -->
+        <canvas id="pdfCanvas" class="w-full h-full object-contain"></canvas>
 
         <!-- Annotation & Shape Drawing Canvas Overlay -->
         <canvas id="drawCanvas" class="absolute inset-0 z-20 cursor-crosshair pointer-events-none"></canvas>
@@ -85,18 +70,18 @@
             <div class="nav-arrow-btn">&#10095;</div>
         </div>
 
-        <!-- RIGHT FLOATING SMART BOARD TOOLBAR (Pens, Colors, Shapes, Eraser) -->
+        <!-- RIGHT FLOATING SMART BOARD TOOLBAR (Clean, Professional, All Tools Intact) -->
         <aside class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#1C2541]/95 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col items-center space-y-2 z-40 border border-white/15">
-            <button id="toolPen" onclick="setTool('pen')" class="p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow text-sm" title="Pen">✏️</button>
-            <button id="toolHighlighter" onclick="setTool('highlighter')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Highlighter">🖍️</button>
-            <button id="toolEraser" onclick="setTool('eraser')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Eraser">🧹</button>
+            <button id="toolPen" onclick="setTool('pen')" class="p-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow text-sm" title="Pen">✏️</button>
+            <button id="toolHighlighter" onclick="setTool('highlighter')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Highlighter">🖍️</button>
+            <button id="toolEraser" onclick="setTool('eraser')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Eraser">🧹</button>
             
             <div class="w-6 h-[1px] bg-white/20 my-0.5"></div>
             
             <!-- Shape Tools -->
-            <button id="toolLine" onclick="setTool('line')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Straight Line">📏</button>
-            <button id="toolRect" onclick="setTool('rect')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Rectangle Shape">◻️</button>
-            <button id="toolCircle" onclick="setTool('circle')" class="p-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Circle Shape">⭕</button>
+            <button id="toolLine" onclick="setTool('line')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Straight Line">📏</button>
+            <button id="toolRect" onclick="setTool('rect')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Rectangle Shape">◻️</button>
+            <button id="toolCircle" onclick="setTool('circle')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Circle Shape">⭕</button>
 
             <div class="w-6 h-[1px] bg-white/20 my-0.5"></div>
             
@@ -112,14 +97,12 @@
             <button onclick="downloadPDF()" class="p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition text-xs" title="Download PDF">📥</button>
         </aside>
 
-    </main>
+        <!-- DISCREET SLIDE COUNTER (Top-Left Corner Overlay on Hover/Subtle) -->
+        <div id="slideCounterDisplay" class="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs font-mono tracking-wider z-40 pointer-events-none opacity-80">
+            01 / --
+        </div>
 
-    <!-- BOTTOM BRANDING FOOTER -->
-    <footer class="flex justify-between items-center px-4 py-1 text-xs text-gray-300 z-40 font-medium">
-        <div>Ganita Manjari (Grade 9) • NCERT Aligned</div>
-        <div class="text-cyan-300 tracking-wide">Akash Maths Online (www.akashmaths.online)</div>
-        <div id="footerSlideNo">Slide 1</div>
-    </footer>
+    </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
@@ -129,7 +112,7 @@
             pageNum = 1,
             pageRendering = false,
             pageNumPending = null,
-            scale = 1.4,
+            scale = 1.5,
             currentTool = 'pen',
             penColor = '#2563EB';
 
@@ -142,7 +125,7 @@
 
         pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
             pdfDoc = pdfDoc_;
-            document.getElementById('slideCounterDisplay').textContent = `Slide 01 / ${pdfDoc.numPages}`;
+            document.getElementById('slideCounterDisplay').textContent = `01 / ${pdfDoc.numPages}`;
             renderPage(pageNum);
         }).catch(err => {
             console.error(err);
@@ -170,8 +153,7 @@
                 });
             });
 
-            document.getElementById('slideCounterDisplay').textContent = `Slide ${String(num).padStart(2, '0')} / ${pdfDoc.numPages}`;
-            document.getElementById('footerSlideNo').textContent = `Slide ${num} of ${pdfDoc.numPages}`;
+            document.getElementById('slideCounterDisplay').textContent = `${String(num).padStart(2, '0')} / ${pdfDoc.numPages}`;
         }
 
         function queueRenderPage(num) {
@@ -191,9 +173,6 @@
             clearCanvas();
             queueRenderPage(pageNum);
         }
-
-        function zoomIn() { scale += 0.15; renderPage(pageNum); }
-        function zoomOut() { if (scale > 0.8) { scale -= 0.15; renderPage(pageNum); } }
 
         document.getElementById('hoverPrev').addEventListener('click', onPrevPage);
         document.getElementById('hoverNext').addEventListener('click', onNextPage);
