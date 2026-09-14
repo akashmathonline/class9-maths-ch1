@@ -51,10 +51,10 @@
 </head>
 <body class="h-screen w-screen flex flex-col overflow-hidden select-none">
 
-    <!-- ABSOLUTE FULL SCREEN VIEWPORT (No Headers, No Footers) -->
-    <div class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
+    <!-- ABSOLUTE FULL SCREEN VIEWPORT -->
+    <div id="appContainer" class="relative w-full h-full flex items-center justify-center bg-black overflow-hidden">
         
-        <!-- PDF Canvas Viewer (Full Board Cover) -->
+        <!-- PDF Canvas Viewer -->
         <canvas id="pdfCanvas" class="w-full h-full object-contain"></canvas>
 
         <!-- Annotation & Shape Drawing Canvas Overlay -->
@@ -70,8 +70,19 @@
             <div class="nav-arrow-btn">&#10095;</div>
         </div>
 
-        <!-- RIGHT FLOATING SMART BOARD TOOLBAR (Clean, Professional, All Tools Intact) -->
+        <!-- BOTTOM-CENTER FLOATING HUD NAVIGATION (As requested) -->
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#1C2541]/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-2xl flex items-center space-x-4 z-40 border border-white/20">
+            <button onclick="onPrevPage()" class="p-2 rounded-xl bg-[#3A506B] hover:bg-[#475C7D] text-white transition shadow" title="Previous Slide">◀</button>
+            <span id="slideCounterDisplay" class="text-white font-mono text-sm tracking-wider font-semibold">01 / --</span>
+            <button onclick="onNextPage()" class="p-2 rounded-xl bg-[#3A506B] hover:bg-[#475C7D] text-white transition shadow" title="Next Slide">▶</button>
+        </div>
+
+        <!-- RIGHT FLOATING SMART BOARD TOOLBAR (Includes Fullscreen Button at Top) -->
         <aside class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#1C2541]/95 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col items-center space-y-2 z-40 border border-white/15">
+            <!-- Fullscreen Toggle Button -->
+            <button onclick="toggleFullscreen()" class="p-2.5 rounded-xl bg-amber-600 text-white hover:bg-amber-500 transition shadow text-sm mb-1" title="Toggle Fullscreen">🛈</button>
+            <div class="w-6 h-[1px] bg-white/20 mb-1"></div>
+
             <button id="toolPen" onclick="setTool('pen')" class="p-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-500 transition shadow text-sm" title="Pen">✏️</button>
             <button id="toolHighlighter" onclick="setTool('highlighter')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Highlighter">🖍️</button>
             <button id="toolEraser" onclick="setTool('eraser')" class="p-2.5 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition text-sm" title="Eraser">🧹</button>
@@ -97,11 +108,6 @@
             <button onclick="downloadPDF()" class="p-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition text-xs" title="Download PDF">📥</button>
         </aside>
 
-        <!-- DISCREET SLIDE COUNTER (Top-Left Corner Overlay on Hover/Subtle) -->
-        <div id="slideCounterDisplay" class="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-xs font-mono tracking-wider z-40 pointer-events-none opacity-80">
-            01 / --
-        </div>
-
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
@@ -121,6 +127,8 @@
         const drawCanvas = document.getElementById('drawCanvas');
         const drawCtx = drawCanvas.getContext('2d');
 
+        // Store annotations for each slide so they don't get lost on page switch
+        let slideDrawings = {};
         let startX = 0, startY = 0, snapshot = null;
 
         pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
@@ -131,6 +139,17 @@
             console.error(err);
             alert("PDF लोड करने में विफल! कृपया फाइल का नाम चेक करें।");
         });
+
+        function saveCurrentSlideDrawings() {
+            slideDrawings[pageNum] = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
+        }
+
+        function restoreSlideDrawings() {
+            drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            if (slideDrawings[pageNum]) {
+                drawCtx.putImageData(slideDrawings[pageNum], 0, 0);
+            }
+        }
 
         function renderPage(num) {
             pageRendering = true;
@@ -146,6 +165,7 @@
 
                 renderTask.promise.then(function() {
                     pageRendering = false;
+                    restoreSlideDrawings(); // Restore drawings for this slide
                     if (pageNumPending !== null) {
                         renderPage(pageNumPending);
                         pageNumPending = null;
@@ -162,20 +182,33 @@
 
         function onPrevPage() {
             if (pageNum <= 1) return;
+            saveCurrentSlideDrawings();
             pageNum--;
-            clearCanvas();
             queueRenderPage(pageNum);
         }
 
         function onNextPage() {
             if (pageNum >= pdfDoc.numPages) return;
+            saveCurrentSlideDrawings();
             pageNum++;
-            clearCanvas();
             queueRenderPage(pageNum);
         }
 
         document.getElementById('hoverPrev').addEventListener('click', onPrevPage);
         document.getElementById('hoverNext').addEventListener('click', onNextPage);
+
+        // Allow clicking on empty black space areas to navigate (Left/Right margins)
+        document.getElementById('appContainer').addEventListener('click', (e) => {
+            // If click is directly on container background (not canvas or buttons)
+            if (e.target.id === 'appContainer' || e.target.id === 'pdfCanvas') {
+                const rect = canvas.getBoundingClientRect();
+                if (e.clientX < rect.left) {
+                    onPrevPage();
+                } else if (e.clientX > rect.right) {
+                    onNextPage();
+                }
+            }
+        });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') onPrevPage();
@@ -244,6 +277,7 @@
                 drawCtx.stroke();
                 [lastX, lastY] = [e.offsetX, e.offsetY];
             }
+            saveCurrentSlideDrawings();
         });
 
         window.addEventListener('mouseup', () => isDrawing = false);
@@ -265,10 +299,23 @@
 
         function clearCanvas() {
             drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            saveCurrentSlideDrawings();
         }
 
         function downloadPDF() {
             window.open(pdfUrl, '_blank');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
         }
     </script>
 </body>
